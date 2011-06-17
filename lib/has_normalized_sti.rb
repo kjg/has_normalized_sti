@@ -15,6 +15,7 @@ module HasNormalizedSti
         :type_column => 'type_name'
       }
       sti_config.update(options)
+      sti_config[:type_class_name] = sti_config[:type_class_name].to_s.classify
 
       belongs_to :normal_type, :class_name => sti_config[:type_class_name], :foreign_key => sti_config[:foreign_key]
       validates_associated :normal_type
@@ -24,7 +25,7 @@ module HasNormalizedSti
 
   module SingletonMethods
     def instantiate(record)
-      associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key]])
+      associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key].to_s])
       type_name = associated_record.try(sti_config[:type_column])
       model = find_sti_class(type_name).allocate
       model.init_with('attributes' => record)

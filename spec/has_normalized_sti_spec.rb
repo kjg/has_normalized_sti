@@ -50,7 +50,7 @@ describe 'has_normalized_sti' do
     end
 
     it 'should return an object of the subclassed type when searched on the parent' do
-      @royal.save
+      @royal.save!
       person = Person.find(@royal.id)
       person.should be_a(Royal)
     end
@@ -60,7 +60,7 @@ describe 'has_normalized_sti' do
     end
 
     it 'should allow a custom foreign key' do
-      @peasant.save
+      @peasant.save!
       @peasant.type_id.should be_nil
       @peasant.special_type_id.should_not be_nil
     end
@@ -68,6 +68,22 @@ describe 'has_normalized_sti' do
     it 'should store the type in a custom column' do
       @peasant.normal_type.type_name.should be_nil
       @peasant.normal_type.special_person_type.should == 'Peasant'
+    end
+
+    it 'should be the right object when found from the base' do
+      @peasant.save!
+      SpecialPerson.find(@peasant.id).should be_a(Peasant)
+    end
+
+    it 'should work with the options as symbols' do
+      @farmer = Farmer.new
+      @farmer.normal_type.should be_a(SpecialPersonType)
+      @farmer.normal_type.type_name.should be_nil
+      @farmer.normal_type.special_person_type.should == 'Farmer'
+      @farmer.save!
+      @farmer.type_id.should be_nil
+      @farmer.special_type_id.should_not be_nil
+      ReallySpecialPerson.find(@farmer.id).should be_a(Farmer)
     end
   end
 end
