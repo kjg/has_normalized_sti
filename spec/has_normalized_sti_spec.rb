@@ -55,6 +55,11 @@ describe 'has_normalized_sti' do
       person.should be_a(Royal)
     end
 
+    it 'should allow the type to be set manual and read back' do
+      @person.type = 'Royal'
+      @person.type.should == 'Royal'
+    end
+
     it 'should allow a custom type class' do
       @peasant.normal_type.should be_a(SpecialPersonType)
     end

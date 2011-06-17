@@ -91,7 +91,7 @@ module HasNormalizedSti
     end
 
     def type
-      self.class.to_s
+      self.normal_type.try(sti_config[:type_column]) || self.class.to_s
     end
 
     def type=(type_name)
