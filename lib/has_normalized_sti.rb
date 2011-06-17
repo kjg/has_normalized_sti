@@ -3,7 +3,38 @@ module HasNormalizedSti
     base.extend(ClassMethods)
   end
 
+  # This extension will allow Rails STI to work a normalized type column.
+
+  # For example
+
+  #   create_table :people, :force => true do |t|
+  #     t.string  :full_name
+  #     t.integer :type_id
+  #   end
+
+  #   create_table :person_types, :force => true do |t|
+  #     t.string :type_name
+  #   end
+
+  #   class Person < ActiveRecord::Base
+  #     has_normalized_sti
+  #   end
+
+  #   class PersonType < ActiveRecord::Base
+  #   end
+
+  #   after calling has_normalized_sti:
+  #   * <tt>type</tt> - returns the name of the class of the type just as regular STI
+  #   * <tt>type=</tt> - set the type to something specific like regular STI
+  #   * <tt>normal_type</tt> - the Type object through the relation
   module ClassMethods
+    # Configuration options are:
+    #
+    #   * type_class_name - belong_to this model for the type storage
+    #     (default: #{class_name}Type)
+    #   * foreign_key - specifies the column for id of the type (default: type_id)
+    #   * type_column - specifies the column name for the type string on the types table
+    #     (default: type_name)
     def has_normalized_sti(options = {})
       extend  HasNormalizedSti::SingletonMethods
       include HasNormalizedSti::InstanceMethods
