@@ -8,22 +8,24 @@ module HasNormalizedSti
       extend  HasNormalizedSti::SingletonMethods
       include HasNormalizedSti::InstanceMethods
 
-      class_eval <<-EVAL
-        belongs_to :normal_type, :class_name => normal_type_class_name, :foreign_key => :type_id
-        validates_associated :normal_type
-        validates_presence_of :normal_type
-      EVAL
+      class_inheritable_accessor :sti_config
+      self.sti_config = {
+        :type_class_name => "#{table_name.classify}Type",
+        :foreign_key => 'type_id',
+        :type_column => 'type_name'
+      }
+      sti_config.update(options)
+
+      belongs_to :normal_type, :class_name => sti_config[:type_class_name], :foreign_key => sti_config[:foreign_key]
+      validates_associated :normal_type
+      validates_presence_of :normal_type
     end
   end
 
   module SingletonMethods
-    def normal_type_class_name
-      "#{table_name.classify}Type"
-    end
-
     def instantiate(record)
-      associated_record = normal_type_class_name.constantize.find_by_id(record['type_id'])
-      type_name = associated_record.try(:type_name)
+      associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key]])
+      type_name = associated_record.try(sti_config[:type_column])
       model = find_sti_class(type_name).allocate
       model.init_with('attributes' => record)
       model
@@ -61,7 +63,8 @@ module HasNormalizedSti
     end
 
     def type=(type_name)
-      self.normal_type = self.class.normal_type_class_name.constantize.find_or_initialize_by_type_name(type_name)
+      type_class = self.class.sti_config[:type_class_name].constantize
+      self.normal_type = type_class.send("find_or_initialize_by_#{sti_config[:type_column]}", type_name)
     end
   end
 end

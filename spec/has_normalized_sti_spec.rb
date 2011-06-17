@@ -21,6 +21,7 @@ describe 'has_normalized_sti' do
     it 'should have type set to the (sub)class name' do
       @person.type.should == 'Person'
       @royal.type.should  == 'Royal'
+      @peasant.type.should == 'Peasant'
     end
 
     it 'should have an associated normal_type' do
@@ -52,6 +53,21 @@ describe 'has_normalized_sti' do
       @royal.save
       person = Person.find(@royal.id)
       person.should be_a(Royal)
+    end
+
+    it 'should allow a custom type class' do
+      @peasant.normal_type.should be_a(SpecialPersonType)
+    end
+
+    it 'should allow a custom foreign key' do
+      @peasant.save
+      @peasant.type_id.should be_nil
+      @peasant.special_type_id.should_not be_nil
+    end
+
+    it 'should store the type in a custom column' do
+      @peasant.normal_type.type_name.should be_nil
+      @peasant.normal_type.special_person_type.should == 'Peasant'
     end
   end
 end

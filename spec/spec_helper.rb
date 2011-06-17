@@ -17,11 +17,20 @@ class Person < ActiveRecord::Base
   has_normalized_sti
 end
 
+class SpecialPerson < ActiveRecord::Base
+  set_table_name :people
+  has_normalized_sti :type_class_name => 'SpecialPersonType', :type_column => 'special_person_type', :foreign_key => 'special_type_id'
+end
+
 class Royal < Person
 end
 
-class Peasant < Person
+class Peasant < SpecialPerson
 end
 
 class PersonType < ActiveRecord::Base
+end
+
+class SpecialPersonType < ActiveRecord::Base
+  set_table_name :person_types
 end
