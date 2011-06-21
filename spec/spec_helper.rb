@@ -7,10 +7,15 @@ require 'rspec/rails/matchers'
 require 'rspec/rails/adapters'
 require 'rspec/rails/fixture_support'
 
+RSpec.configure do |c|
+  c.use_transactional_examples = true
+end
+
 $:.unshift File.dirname(__FILE__) + '/../lib'
 require File.dirname(__FILE__) + '/../init'
 
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+ActiveRecord::Base.configurations={'test' => {:adapter => "sqlite3", :database => ":memory:"} }
+ActiveRecord::Base.establish_connection('test')
 load(File.dirname(__FILE__) + "/schema.rb")
 
 class PersonType < ActiveRecord::Base
