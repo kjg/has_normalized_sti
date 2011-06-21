@@ -98,5 +98,24 @@ describe 'has_normalized_sti' do
         end
       }.should raise_error(LoadError)
     end
+
+    it 'should only return subclassed records' do
+      person = Person.create!
+      royal = Royal.create!
+
+      Royal.all.count.should == 1
+    end
+
+    it 'should only return subclassed and subsubclassed' do
+      person = Person.create!
+      royal = Royal.create!
+
+      class King < Royal
+      end
+
+      King.create!
+      Royal.all.count.should == 2
+    end
+
   end
 end

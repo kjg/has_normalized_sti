@@ -97,6 +97,22 @@ module HasNormalizedSti
         end
       end
     end
+
+    def descends_from_active_record?
+      if superclass.abstract_class?
+        superclass.descends_from_active_record?
+      else
+        superclass == ActiveRecord::Base
+      end
+    end
+
+    def type_condition
+      sti_column = sti_config[:type_class_name].constantize.arel_table[sti_config[:type_column]]
+      condition = sti_column.eq(sti_name)
+      descendants.each { |subclass| condition = condition.or(sti_column.eq(subclass.sti_name)) }
+
+      condition
+    end
   end
 
   module InstanceMethods
