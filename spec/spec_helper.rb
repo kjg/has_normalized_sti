@@ -13,6 +13,13 @@ require File.dirname(__FILE__) + '/../init'
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 load(File.dirname(__FILE__) + "/schema.rb")
 
+class PersonType < ActiveRecord::Base
+end
+
+class SpecialPersonType < ActiveRecord::Base
+  set_table_name :person_types
+end
+
 class Person < ActiveRecord::Base
   has_normalized_sti
 end
@@ -26,13 +33,6 @@ class Royal < Person
 end
 
 class Peasant < SpecialPerson
-end
-
-class PersonType < ActiveRecord::Base
-end
-
-class SpecialPersonType < ActiveRecord::Base
-  set_table_name :person_types
 end
 
 class ReallySpecialPerson < ActiveRecord::Base

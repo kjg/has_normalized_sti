@@ -48,7 +48,18 @@ module HasNormalizedSti
       sti_config.update(options)
       sti_config[:type_class_name] = sti_config[:type_class_name].to_s.classify
 
+      begin
+        sti_config[:type_class_name].constantize
+      rescue NameError
+        txt = "has_normalized_sti could not load #{sti_config[:type_class_name]}\n"
+        txt << "please make sure #{sti_config[:type_class_name]} is loaded before #{self.to_s}\n"
+        txt << "you might need to add require_dependency '#{sti_config[:type_class_name].underscore}'\n"
+        txt << "to #{self.to_s.underscore}.rb"
+        raise LoadError, txt
+      end
+
       belongs_to :normal_type, :class_name => sti_config[:type_class_name], :foreign_key => sti_config[:foreign_key]
+      default_scope joins(:normal_type).select("#{table_name}.*, #{sti_config[:type_class_name].constantize.table_name}.#{sti_config[:type_column]}")
       validates_associated :normal_type
       validates_presence_of :normal_type
     end
@@ -56,8 +67,12 @@ module HasNormalizedSti
 
   module SingletonMethods
     def instantiate(record)
-      associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key].to_s])
-      type_name = associated_record.try(sti_config[:type_column])
+      if record.has_key?(sti_config[:type_column])
+        type_name = record[sti_config[:type_column]]
+      else
+        associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key].to_s])
+        type_name = associated_record.try(sti_config[:type_column])
+      end
       model = find_sti_class(type_name).allocate
       model.init_with('attributes' => record)
       model

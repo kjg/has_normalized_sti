@@ -90,5 +90,13 @@ describe 'has_normalized_sti' do
       @farmer.special_type_id.should_not be_nil
       ReallySpecialPerson.find(@farmer.id).should be_a(Farmer)
     end
+
+    it 'should error if the type class is not loaded' do
+      lambda{
+        class ErrPerson < ActiveRecord::Base
+          has_normalized_sti :type_class_name => 'NonExistantType'
+        end
+      }.should raise_error(LoadError)
+    end
   end
 end
