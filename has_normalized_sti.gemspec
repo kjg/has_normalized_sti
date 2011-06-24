@@ -25,6 +25,8 @@ Gem::Specification.new do |s|
     "Gemfile.lock",
     "README",
     "Rakefile",
+    "VERSION",
+    "has_normalized_sti.gemspec",
     "init.rb",
     "lib/has_normalized_sti.rb",
     "spec/has_normalized_sti_spec.rb",
