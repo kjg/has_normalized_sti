@@ -76,23 +76,21 @@ module HasNormalizedSti
     end
 
     def find_sti_class(type_name)
-      if type_name.blank?
-        self
-      else
-        begin
-          if store_full_sti_class
-            ActiveSupport::Dependencies.constantize(type_name)
-          else
-            compute_type(type_name)
-          end
-        rescue NameError
-          raise SubclassNotFound,
-            "The single-table inheritance mechanism failed to locate the subclass: '#{type_name}'. " +
-            "This error is raised because the column '#{inheritance_column}' is reserved for storing the class in case of inheritance. " +
-            "Please rename this column if you didn't intend it to be used for storing the inheritance class " +
-            "or overwrite #{name}.inheritance_column to use another column for that information."
-        end
+      # AR will only do its magic if it thinks the db table has the inheritance_column
+      # fake it if we need
+      remove_inheritance_column_from_columns_hash = false
+      unless columns_hash.include?(inheritance_column)
+        columns_hash[inheritance_column] = nil
+        remove_inheritance_column_from_columns_hash = true
       end
+
+      #let AR do all the work
+      sti_class = super
+
+      #remove the inheritance_column if we faked it
+      columns_hash.delete(inheritance_column) if remove_inheritance_column_from_columns_hash
+
+      sti_class
     end
 
     def descends_from_active_record?
