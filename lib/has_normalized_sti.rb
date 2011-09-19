@@ -67,12 +67,9 @@ module HasNormalizedSti
 
   module SingletonMethods
     def instantiate(record)
-      if record.has_key?(sti_config[:type_column])
-        type_name = record[sti_config[:type_column]]
-      else
-        associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key].to_s])
-        type_name = associated_record.try(sti_config[:type_column])
-      end
+      associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key].to_s])
+      type_name = associated_record.try(sti_config[:type_column])
+
       model = find_sti_class(type_name).allocate
       model.init_with('attributes' => record)
       model
