@@ -67,6 +67,13 @@ module HasNormalizedSti
   end
 
   module SingletonMethods
+    def columns_hash
+      ch = super
+      # AR will only do its magic if it thinks the db table has the inheritance_column
+      ch[inheritance_column] = nil
+      ch
+    end
+
     # look up the type name on the associated object
     # put in in the record's inheritance_column to trick AR
     def instantiate(record)
@@ -75,32 +82,6 @@ module HasNormalizedSti
       record[inheritance_column] = type_name
 
       super
-    end
-
-    def find_sti_class(type_name)
-      # AR will only do its magic if it thinks the db table has the inheritance_column
-      # fake it if we need
-      remove_inheritance_column_from_columns_hash = false
-      unless columns_hash.include?(inheritance_column)
-        columns_hash[inheritance_column] = nil
-        remove_inheritance_column_from_columns_hash = true
-      end
-
-      #let AR do all the work
-      sti_class = super
-
-      #remove the inheritance_column if we faked it
-      columns_hash.delete(inheritance_column) if remove_inheritance_column_from_columns_hash
-
-      sti_class
-    end
-
-    def descends_from_active_record?
-      if superclass.abstract_class?
-        superclass.descends_from_active_record?
-      else
-        superclass == ActiveRecord::Base
-      end
     end
 
     def type_condition
