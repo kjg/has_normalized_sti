@@ -62,17 +62,19 @@ module HasNormalizedSti
       default_scope joins(:normal_type).select("#{table_name}.*, #{sti_config[:type_class_name].constantize.table_name}.#{sti_config[:type_column]}")
       validates_associated :normal_type
       validates_presence_of :normal_type
+      set_inheritance_column 'has_normalized_sti_proxy_type'
     end
   end
 
   module SingletonMethods
+    # look up the type name on the associated object
+    # put in in the record's inheritance_column to trick AR
     def instantiate(record)
       associated_record = sti_config[:type_class_name].constantize.find_by_id(record[sti_config[:foreign_key].to_s])
       type_name = associated_record.try(sti_config[:type_column])
+      record[inheritance_column] = type_name
 
-      model = find_sti_class(type_name).allocate
-      model.init_with('attributes' => record)
-      model
+      super
     end
 
     def find_sti_class(type_name)
