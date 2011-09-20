@@ -94,7 +94,7 @@ module HasNormalizedSti
   end
 
   module InstanceMethods
-    def initialize(attributes = {})
+    def initialize(*args)
       super
       self.type = self.class.to_s
     end
