@@ -15,6 +15,7 @@ begin
     gem.author      = 'Kevin Glowacz'
     gem.files.exclude '.rvmrc'
   end
+  Jeweler::RubygemsDotOrgTasks.new
 rescue LoadError
   puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
 end
