@@ -5,15 +5,17 @@
 
 Gem::Specification.new do |s|
   s.name = %q{has_normalized_sti}
-  s.version = "1.0.0"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Kevin Glowacz"]
-  s.date = %q{2011-06-24}
-  s.description = %q{      has_normalzied_sti expects the model to have a type_id column
-      referencing a types table containg all the possible types.
-      the types table will be auto populated with new types as new
-      subclasses are saved
+  s.authors = [%q{Kevin Glowacz}]
+  s.date = %q{2011-09-20}
+  s.description = %q{      has_normalzied_sti is a rails extension to allow Single Table Inheritance
+      to work with a database normalized type column.
+      The extension expects the STI model to have a type_id column instead of
+      a type column. type_id should reference a Types table containg all the possible types.
+      The types table will be auto populated with new types as new
+      subclasses are saved.
 }
   s.email = %q{kevin@glowacz.info}
   s.extra_rdoc_files = [
@@ -22,7 +24,6 @@ Gem::Specification.new do |s|
   s.files = [
     ".rspec",
     "Gemfile",
-    "Gemfile.lock",
     "README",
     "Rakefile",
     "VERSION",
@@ -34,8 +35,8 @@ Gem::Specification.new do |s|
     "spec/spec_helper.rb",
     "spec/speed_test.rb"
   ]
-  s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
+  s.require_paths = [%q{lib}]
+  s.rubygems_version = %q{1.8.6}
   s.summary = %q{allows rails STI to work when the type is normalized out}
 
   if s.respond_to? :specification_version then
