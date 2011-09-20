@@ -9,6 +9,6 @@ end
 group :test do
   gem 'rspec'
   gem 'rspec-rails'
-  gem 'activerecord', '~> 3.0.0'
+  gem 'activerecord', '>= 3.0.0'
   gem 'sqlite3'
 end
