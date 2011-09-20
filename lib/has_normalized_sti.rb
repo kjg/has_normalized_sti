@@ -39,7 +39,7 @@ module HasNormalizedSti
       extend  HasNormalizedSti::SingletonMethods
       include HasNormalizedSti::InstanceMethods
 
-      class_inheritable_accessor :sti_config
+      class_attribute :sti_config
       self.sti_config = {
         :type_class_name => "#{table_name.classify}Type",
         :foreign_key => 'type_id',
